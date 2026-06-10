@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-script
+data:
+  init.sql: |
+    -- Bronze Layer: Raw Hacker News data
+    CREATE TABLE IF NOT EXISTS raw_hn_items (
+        id SERIAL PRIMARY KEY,
+        hn_id BIGINT UNIQUE NOT NULL,
+        title TEXT,
+        text_content TEXT,
+        author VARCHAR(100),
+        created_at TIMESTAMP WITH TIME ZONE,
+        item_type VARCHAR(50),
+        url TEXT,
+        fetched_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- Gold Layer: Sentiment analysis results
+    CREATE TABLE IF NOT EXISTS analyzed_trends (
+        id SERIAL PRIMARY KEY,
+        hn_id BIGINT REFERENCES raw_hn_items(hn_id) ON DELETE CASCADE,
+        text_to_analyze TEXT,
+        sentiment_label VARCHAR(50),
+        sentiment_score REAL,
+        detected_technologies TEXT[],
+        analyzed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        env:
+        - name: POSTGRES_DB
+          value: sentiment_db
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: init-script
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: init-script
+        configMap:
+          name: postgres-init-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: postgres
