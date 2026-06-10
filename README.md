@@ -10,3 +10,11 @@ Targeting Hi-Tech industry employment trends
 
 ## Epic 2. Data Ingestion pipeline with Airflow
 2.1 created new namespace for airflow in K8s
+
+
+## Epic 3. Create Microservices platform
+Install some libraries:
+*   fastapi
+*   uvicorn
+*   sqlalchemy
+* psycopg2-binary

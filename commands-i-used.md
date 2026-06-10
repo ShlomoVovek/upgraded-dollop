@@ -10,3 +10,6 @@ ubectl exec -it deployment/postgres-deployment -- psql -U admin -d sentiment_db 
 ## postgres-terminal
 \dt # show exists table
 \q # quit terminal
+
+## Airflow 3.X {admin, admin}
+kubectl port-forward svc/airflow-api-server 8080:8080 -n airflow # start port forwarding to port 8080, allows open airflow UI
