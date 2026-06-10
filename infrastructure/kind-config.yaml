@@ -1,0 +1,21 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: sentiment-trends-cluster
+nodes:
+  - role: control-plane
+    # maps the ports from cluster to host machine
+    extraPortMappings:
+    # for FastAPI server (Swagger UI)
+    - containerPort: 30000
+      hostPort: 8000
+      protocol: TCP
+
+    # for Apache Airflow inteface
+    - containerPort: 30080
+      hostPort: 8080
+      protocol: TCP
+
+    # for PostgreSQL via DBEAVER or Datagrip
+    - containerPort: 30432
+      hostPort: 5432
+      protocol: TCP

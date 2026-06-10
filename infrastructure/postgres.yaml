@@ -1,0 +1,84 @@
+# ===============
+# 1. Secret
+# ===============
+apiVersion: v1
+kind: Secret
+metadata: 
+  name: postgres-secret
+type: opaque
+stringData: 
+  # setting here the password
+  POSTGRES_PASSWORD: "mysecretpassword"
+ 
+---
+# ===============
+# 2. Persistent Volume Claim (PVC)
+# ===============
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi # 2GB for storage
+
+---
+# ===============
+# 3. Deployment (actuall container)
+# ===============
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine # official image for ARM64
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: sentiment_db
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+
+---
+# ===============
+# 4. Service (expose DB to deployment)
+# ===============
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  type: NodePort
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+      nodePort: 30432 # this port is mapped to host machine in kind-config.yaml

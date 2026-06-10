@@ -199,7 +199,7 @@ cython_debug/
 #   that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
 #   and can be added to the global gitignore or merged into this file. However, if you prefer, 
 #   you could uncomment the following to ignore the entire vscode folder
-# .vscode/
+.vscode/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 
@@ -216,3 +216,75 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# =========================
+# macOS Specific
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# =========================
+# IDEs & Editors
+# =========================
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# Python & Environments
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+.Python
+
+# =========================
+# Secrets & Configs (CRITICAL)
+# =========================
+# חובה לוודא שמשתני סביבה לא עולים לגיט!
+.env
+.env.*
+*.pem
+secrets.yaml
+kube-secrets.yaml
+
+# =========================
+# Apache Airflow
+# =========================
+airflow/logs/
+airflow/airflow-webserver.pid
+airflow/airflow.db
+airflow/standalone_admin_password.txt
+
+# =========================
+# Machine Learning & NLP (HuggingFace)
+# =========================
+# מניעת העלאת משקלי המודל אם הם נשמרים לוקאלית
+models/
+*.safetensors
+*.bin
+*.h5
+.huggingface/
+
+# =========================
+# Data & Database (Local Volumes)
+# =========================
+# למקרה שתייצר קבצי נתונים זמניים או תגדיר Volume מקומי לפוסטגרס
+data/
+*.csv
+*.json
+*.sqlite3
+postgres-data/
+
+# =========================
+# Testing, Linting & CI/CD Tooling
+# =========================
+.pytest_cache/
+.ruff_cache/
+coverage.xml
+htmlcov/
