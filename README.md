@@ -17,4 +17,4 @@ Install some libraries:
 *   fastapi
 *   uvicorn
 *   sqlalchemy
-* psycopg2-binary
+*   psycopg2-binary
